@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Leave Out System</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h2>FRIENDS SCHOOL KIMUGUI GIRLS</h2>
+    <h4>MOTTO: STRIVE TO EXCEL</h4>
+  </header>
+
+  <main>
+    <h3>Leave Out Request Form</h3>
+    <form id="leaveForm">
+      <input type="text" name="STUDENT_NAME" placeholder="Student Name" required><br>
+      <input type="text" name="ADM_NO" placeholder="Admission Number" required><br>
+      <input type="text" name="FORM" placeholder="Form/Class" required><br>
+      <input type="text" name="REASON" placeholder="Reason for Leave" required><br>
+      <input type="date" name="DATE" required><br>
+      <input type="text" name="PARENT_CONTACT" placeholder="Parent Contact" required><br>
+      <input type="text" name="PRINCIPAL_CONTACT" placeholder="Principal Contact" required><br>
+      <input type="text" name="MOD_NAME" placeholder="Moderator Name" required><br><br>
+
+      <button type="button" onclick="sendSMS()">📤 Send SMS</button>
+      <button type="button" onclick="printSheet()">🖨️ Print</button>
+      <button type="button" onclick="saveData()">💾 Save to Sheet</button>
+      <button type="button" onclick="searchStudent()">🔍 Search by ADM NO</button>
+    </form>
+  </main>
+
+  <footer>
+    <p>SYSTEM BY: PAUL MAKOKHA</p>
+    <p>0708458844 / 0756157756</p>
+    <p>TO GOD BE THE GLORY</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
