@@ -1,5 +1,5 @@
 
-const scriptURL = "https://script.google.com/macros/s/AKfycbxnPR4CCNsqg5wme9QPeGeHpzOQmrb4cX0arOZ2P6g74NmJXIOQTmPP5tclBuBpjirkTA/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbz6h3c6Iv4gDyTbQCYXTkNmSVGS8oEWQXTutgAvbxmALtkpHRagJtFYApAdgF2G6vJ1VA/exec";
 
 function getFormData() {
   const form = document.getElementById("leaveForm");
