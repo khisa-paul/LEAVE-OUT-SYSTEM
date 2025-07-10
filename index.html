@@ -1,61 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Friends School Kimugui Girls - Leave Out System</title>
+  <title>Friends School Kimugui Girls</title>
   <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
     }
-    header, footer {
-      background-color: #003366;
+    header {
+      background-color: #007BFF; /* Blue header */
       color: white;
       text-align: center;
-      padding: 10px 0;
+      padding: 15px;
     }
-    .container {
+    header small {
+      display: block;
+      margin-top: 5px;
+      font-size: 14px;
+      font-style: italic;
+    }
+    main {
       padding: 20px;
-      max-width: 600px;
-      margin: auto;
     }
-    input[type="text"] {
-      width: 100%;
+    input, button {
+      margin: 5px 3px;
       padding: 8px;
-      margin: 6px 0;
-      box-sizing: border-box;
-    }
-    .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin-top: 10px;
+      font-size: 14px;
     }
     button {
-      flex: 1;
-      min-width: 70px;
-      padding: 6px;
-      font-size: 12px;
       border: none;
-      color: white;
       cursor: pointer;
-      border-radius: 4px;
+      color: white;
     }
-    .sms-btn { background-color: #4CAF50; }
-    .print-btn { background-color: #2196F3; }
-    .download-btn { background-color: #f57c00; }
-    .save-btn { background-color: #9c27b0; }
-    .logout-btn { background-color: #e91e63; }
-    .search-container {
-      margin-bottom: 15px;
-      display: flex;
-      gap: 5px;
+    #output {
+      margin-top: 15px;
+      white-space: pre-wrap;
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 5px;
     }
-    .search-container input[type="text"] {
-      flex: 1;
+    footer {
+      background-color: #007BFF; /* Blue footer */
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: 20px;
+      font-size: 14px;
     }
-    @media (max-width: 480px) {
-      .button-row {
-        flex-direction: column;
+    .btn-blue { background-color: #007BFF; }
+    .btn-green { background-color: #28a745; }
+    .btn-orange { background-color: #fd7e14; }
+    .btn-red { background-color: #dc3545; }
+    .btn-purple { background-color: #6f42c1; }
+    .btn-dark { background-color: #343a40; }
+
+    @media screen and (max-width: 600px) {
+      input, button {
+        display: block;
+        width: 100%;
       }
     }
   </style>
@@ -64,148 +67,133 @@
 
   <header>
     <h2>FRIENDS SCHOOL KIMUGUI GIRLS</h2>
-    <p>MOTTO: STRIVE TO EXCEL</p>
+    <small>Motto: Strive to Excel</small>
   </header>
 
-  <div class="container">
-    <div class="search-container">
-      <input type="text" id="searchAdm" placeholder="Enter Admission Number">
-      <button onclick="searchStudent()" style="background-color: #607d8b;">Search</button>
-    </div>
+  <main>
+    <!-- Search at the top -->
+    <input type="text" id="searchAdm" placeholder="Search by ADM NO">
+    <button class="btn-dark" onclick="searchStudent()">Search</button>
+    <button class="btn-red" onclick="logout()">Logout</button>
+    <br>
 
-    <input type="text" id="studentName" placeholder="Student Name">
-    <input type="text" id="admNo" placeholder="Admission Number">
+    <!-- Entry fields -->
+    <input type="text" id="name" placeholder="Name">
+    <input type="text" id="adm" placeholder="ADM NO">
     <input type="text" id="form" placeholder="Form">
     <input type="text" id="reason" placeholder="Reason">
     <input type="text" id="date" placeholder="Date">
-    <input type="text" id="parentContact" placeholder="Parent Contact">
-    <input type="text" id="principalContact" placeholder="Principal Contact">
-    <input type="text" id="modName" placeholder="MOD Name">
+    <input type="text" id="parent" placeholder="Parent Contact">
+    <input type="text" id="principal" placeholder="Principal Contact">
+    <input type="text" id="mod" placeholder="MOD Name">
+    <br>
 
-    <div class="button-row">
-      <button class="sms-btn" onclick="sendSMS()">Send SMS</button>
-      <button class="print-btn" onclick="printSheet()">Print</button>
-      <button class="download-btn" onclick="downloadPDF()">Download</button>
-      <button class="save-btn" onclick="saveData()">Save</button>
-      <button class="logout-btn" onclick="logout()">Logout</button>
-    </div>
-  </div>
+    <!-- Action buttons -->
+    <button class="btn-blue" onclick="sendSMS()">SendSMS</button>
+    <button class="btn-orange" onclick="printSheet()">Print</button>
+    <button class="btn-purple" onclick="generatePDF()">Download</button>
+    <button class="btn-green" onclick="saveToSheet()">Save</button>
+
+    <div id="output">Output will appear here...</div>
+  </main>
 
   <footer>
-    SYSTEM BY PAUL MAKOKHA, TO GOD BE THE GLORY, 0708458844 / 0756157756
+    System by: Paul Makokha. To God be the Glory.<br>
+    0708458844 / 0756157756
   </footer>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqVnXsUtfKWXJ5bA_rq54eJqmiUJ4ZBDmb4KWtqJOm3d-1qCm-0RedfWfoezYghFrrTw/exec";
-
-    function getFormData() {
-      return {
-        studentName: document.getElementById("studentName").value,
-        admNo: document.getElementById("admNo").value,
-        form: document.getElementById("form").value,
-        reason: document.getElementById("reason").value,
-        date: document.getElementById("date").value,
-        parentContact: document.getElementById("parentContact").value,
-        principalContact: document.getElementById("principalContact").value,
-        modName: document.getElementById("modName").value,
-      };
-    }
-
-    function saveData() {
-      const data = getFormData();
-      data.type = "save";
-
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      })
-      .then(res => res.json())
-      .then(response => {
-        alert("Saved successfully!");
-        clearForm();
-      })
-      .catch(err => console.error(err));
-    }
-
-    function clearForm() {
-      document.querySelectorAll("input[type=text]").forEach(input => input.value = "");
-    }
-
-    function sendSMS() {
-      const data = getFormData();
-      data.type = "sms";
-
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      })
-      .then(res => res.json())
-      .then(response => alert("SMS Sent!"))
-      .catch(err => console.error(err));
-    }
-
-    function printSheet() {
-      const data = getFormData();
-      data.type = "print";
-
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      })
-      .then(res => res.json())
-      .then(response => {
-        if (response.url) {
-          window.open(response.url, "_blank");
-        } else {
-          alert("Printed, but no PDF link received.");
-        }
-      })
-      .catch(err => console.error(err));
-    }
-
-    function downloadPDF() {
-      alert("Use the print button to generate and download the PDF.");
-    }
+    const SCRIPT_URL = "YOUR_SCRIPT_URL_HERE";
 
     function searchStudent() {
-      const admNo = document.getElementById("searchAdm").value;
-      if (!admNo) {
-        alert("Enter admission number to search!");
+      const adm = document.getElementById("searchAdm").value.trim();
+      if (!adm) {
+        alert("Please enter ADM NO to search.");
         return;
       }
-
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify({ type: "search", ADM_NO: admNo }),
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.studentName) {
-          document.getElementById("studentName").value = data.studentName;
-          document.getElementById("admNo").value = data.admNo;
-          document.getElementById("form").value = data.form;
-          document.getElementById("reason").value = data.reason;
-          document.getElementById("date").value = data.date;
-          document.getElementById("parentContact").value = data.parentContact;
-          document.getElementById("principalContact").value = data.principalContact;
-          document.getElementById("modName").value = data.modName;
-        } else {
-          alert("Student not found!");
-        }
-      })
-      .catch(err => console.error(err));
+      const data = { type: "search", ADM_NO: adm };
+      postData(data);
     }
 
     function logout() {
-      alert("Logged out!");
-      clearForm();
+      alert("You have been logged out!");
+      // You can also redirect or clear session data here
+    }
+
+    function saveToSheet() {
+      const data = {
+        type: "save",
+        name: document.getElementById("name").value,
+        ADM_NO: document.getElementById("adm").value,
+        form: document.getElementById("form").value,
+        reason: document.getElementById("reason").value,
+        date: document.getElementById("date").value,
+        parentContact: document.getElementById("parent").value,
+        principalContact: document.getElementById("principal").value,
+        modName: document.getElementById("mod").value,
+        status: "Pending"
+      };
+      postData(data).then(() => clearForm());
+    }
+
+    function clearForm() {
+      document.getElementById("name").value = "";
+      document.getElementById("adm").value = "";
+      document.getElementById("form").value = "";
+      document.getElementById("reason").value = "";
+      document.getElementById("date").value = "";
+      document.getElementById("parent").value = "";
+      document.getElementById("principal").value = "";
+      document.getElementById("mod").value = "";
+    }
+
+    function sendSMS() {
+      const data = { type: "sms" };
+      postData(data);
+    }
+
+    function printSheet() {
+      const data = { type: "print" };
+      postData(data);
+    }
+
+    function generatePDF() {
+      const data = { type: "pdf" };
+      postData(data);
+    }
+
+    async function postData(data) {
+      document.getElementById("output").innerText = "Loading...";
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify(data)
+        });
+        const response = await res.json();
+        if (response.pdfUrl) {
+          document.getElementById("output").innerHTML = `✅ PDF Link: <a href="${response.pdfUrl}" target="_blank">Open PDF</a>`;
+        } else {
+          document.getElementById("output").innerText = JSON.stringify(response, null, 2);
+        }
+      } catch (err) {
+        document.getElementById("output").innerText = "❌ Error: " + err;
+      }
     }
   </script>
 </body>
 </html>
 
-     
-     
+   
+
+
+
+    
+
+ 
+       
+    
+
+   
  
       
      
