@@ -5,11 +5,10 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
     }
     header {
-      background-color: #007BFF; /* Blue header */
+      background-color: #007BFF;
       color: white;
       text-align: center;
       padding: 15px;
@@ -41,7 +40,7 @@
       border-radius: 5px;
     }
     footer {
-      background-color: #007BFF; /* Blue footer */
+      background-color: #007BFF;
       color: white;
       text-align: center;
       padding: 10px;
@@ -103,7 +102,7 @@
   </footer>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMl6ERk1oUu0T933UOZibn7JejCu6jy_rVPve4OYiNu8Kq1yeCVNegXp-RYpbnSG5hBQ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSKygZLV5JAjnpXUxry-dr_IMGB8B0ALULKQW3J8MwERfN_7LKx-2UdXE0UwsXDV_Y5g/exec";
 
     function searchStudent() {
       const adm = document.getElementById("searchAdm").value.trim();
@@ -117,7 +116,6 @@
 
     function logout() {
       alert("You have been logged out!");
-      // You can also redirect or clear session data here
     }
 
     function saveToSheet() {
@@ -169,23 +167,35 @@
           method: "POST",
           body: JSON.stringify(data)
         });
-        const response = await res.json();
+
+        const text = await res.text();
+        let response;
+
+        try {
+          response = JSON.parse(text);
+        } catch (jsonError) {
+          throw new Error("Response is not valid JSON:\n" + text);
+        }
+
         if (response.pdfUrl) {
           document.getElementById("output").innerHTML = `✅ PDF Link: <a href="${response.pdfUrl}" target="_blank">Open PDF</a>`;
         } else {
           document.getElementById("output").innerText = JSON.stringify(response, null, 2);
         }
       } catch (err) {
-        document.getElementById("output").innerText = "❌ Error: " + err;
+        document.getElementById("output").innerText = "❌ Error: " + err.message;
       }
     }
   </script>
 </body>
 </html>
 
-   
-
-
+     
+  
+ 
+      
+      
+  
 
     
 
