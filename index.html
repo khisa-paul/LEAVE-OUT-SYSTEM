@@ -4,54 +4,58 @@
   <title>Friends School Kimugui Girls - Leave Out System</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
       margin: 0;
-      padding: 0;
+      font-family: Arial, sans-serif;
     }
     header, footer {
-      background-color: blue;
+      background-color: #003366;
       color: white;
       text-align: center;
-      padding: 10px;
+      padding: 10px 0;
     }
-    main {
-      background-color: white;
+    .container {
       padding: 20px;
-      margin: 20px auto;
       max-width: 600px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin: auto;
     }
-    input[type="text"], input[type="date"] {
+    input[type="text"] {
       width: 100%;
       padding: 8px;
-      margin: 5px 0 15px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      margin: 6px 0;
       box-sizing: border-box;
     }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
     button {
-      margin: 5px 4px 5px 0;
-      padding: 8px 10px;
+      flex: 1;
+      min-width: 70px;
+      padding: 6px;
+      font-size: 12px;
       border: none;
       color: white;
-      border-radius: 4px;
       cursor: pointer;
-      min-width: 80px;
+      border-radius: 4px;
     }
-    button.save-btn { background-color: green; }
-    button.sms-btn { background-color: orange; }
-    button.print-btn { background-color: purple; }
-    button.search-btn { background-color: teal; }
-    button.logout-btn { background-color: red; }
-    button:hover { opacity: 0.9; }
-    @media (max-width: 640px) {
-      main {
-        margin: 10px;
-        padding: 15px;
-      }
-      button {
-        margin: 4px 2px;
+    .sms-btn { background-color: #4CAF50; }
+    .print-btn { background-color: #2196F3; }
+    .download-btn { background-color: #f57c00; }
+    .save-btn { background-color: #9c27b0; }
+    .logout-btn { background-color: #e91e63; }
+    .search-container {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 5px;
+    }
+    .search-container input[type="text"] {
+      flex: 1;
+    }
+    @media (max-width: 480px) {
+      .button-row {
+        flex-direction: column;
       }
     }
   </style>
@@ -63,38 +67,36 @@
     <p>MOTTO: STRIVE TO EXCEL</p>
   </header>
 
-  <main>
-    <h3>Leave Out Form</h3>
+  <div class="container">
+    <div class="search-container">
+      <input type="text" id="searchAdm" placeholder="Enter Admission Number">
+      <button onclick="searchStudent()" style="background-color: #607d8b;">Search</button>
+    </div>
 
     <input type="text" id="studentName" placeholder="Student Name">
     <input type="text" id="admNo" placeholder="Admission Number">
     <input type="text" id="form" placeholder="Form">
-    <input type="text" id="reason" placeholder="Reason for Leave">
-    <input type="date" id="date" placeholder="Date">
+    <input type="text" id="reason" placeholder="Reason">
+    <input type="text" id="date" placeholder="Date">
     <input type="text" id="parentContact" placeholder="Parent Contact">
     <input type="text" id="principalContact" placeholder="Principal Contact">
     <input type="text" id="modName" placeholder="MOD Name">
 
-    <h4>Search Student by Admission Number</h4>
-    <input type="text" id="searchAdmNo" placeholder="Enter Admission Number to Search">
-    <button class="search-btn" onclick="searchStudent()">Search</button>
-
-    <div style="margin-top: 10px;">
-      <button class="save-btn" onclick="saveData()">Save</button>
+    <div class="button-row">
       <button class="sms-btn" onclick="sendSMS()">Send SMS</button>
       <button class="print-btn" onclick="printSheet()">Print</button>
+      <button class="download-btn" onclick="downloadPDF()">Download</button>
+      <button class="save-btn" onclick="saveData()">Save</button>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
-
-    <p id="result"></p>
-  </main>
+  </div>
 
   <footer>
-    <p>SYSTEM BY PAUL MAKOKHA, TO GOD BE THE GLORY, 0708458844 / 0756157756</p>
+    SYSTEM BY PAUL MAKOKHA, TO GOD BE THE GLORY, 0708458844 / 0756157756
   </footer>
 
   <script>
-    const scriptURL ="https://script.google.com/macros/s/AKfycbw7Va2jKAQzj-p6mxqWqF0k7I3YRD96V9Kc99KB219CyO0hYOhh32sV94COqkP0sIw_xg/exec"; // Replace with your Google Apps Script URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFfBGugFaoqhKnJLu2S5ejjDShtgNfSeGHyhL9A3zqQ5ReRa5E_7uTCwn1tUvyK3eXlQ/exec";
 
     function getFormData() {
       return {
@@ -105,7 +107,7 @@
         date: document.getElementById("date").value,
         parentContact: document.getElementById("parentContact").value,
         principalContact: document.getElementById("principalContact").value,
-        modName: document.getElementById("modName").value
+        modName: document.getElementById("modName").value,
       };
     }
 
@@ -113,112 +115,105 @@
       const data = getFormData();
       data.type = "save";
 
-      fetch(scriptURL, {
-        method: "POST",
-        body: JSON.stringify(data)
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(data),
       })
-      .then(res => res.text())
-      .then(txt => {
-        document.getElementById("result").innerText = txt;
+      .then(res => res.json())
+      .then(response => {
+        alert("Saved successfully!");
         clearForm();
       })
-      .catch(err => {
-        document.getElementById("result").innerText = "Error: " + err;
-      });
+      .catch(err => console.error(err));
+    }
+
+    function clearForm() {
+      document.querySelectorAll("input[type=text]").forEach(input => input.value = "");
     }
 
     function sendSMS() {
       const data = getFormData();
       data.type = "sms";
 
-      fetch(scriptURL, {
-        method: "POST",
-        body: JSON.stringify(data)
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(data),
       })
-      .then(res => res.text())
-      .then(txt => {
-        document.getElementById("result").innerText = txt;
-      })
-      .catch(err => {
-        document.getElementById("result").innerText = "Error: " + err;
-      });
+      .then(res => res.json())
+      .then(response => alert("SMS Sent!"))
+      .catch(err => console.error(err));
     }
 
     function printSheet() {
       const data = getFormData();
       data.type = "print";
 
-      fetch(scriptURL, {
-        method: "POST",
-        body: JSON.stringify(data)
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(data),
       })
-      .then(res => res.text())
-      .then(txt => {
-        document.getElementById("result").innerText = txt;
+      .then(res => res.json())
+      .then(response => {
+        if (response.url) {
+          window.open(response.url, "_blank");
+        } else {
+          alert("Printed, but no PDF link received.");
+        }
       })
-      .catch(err => {
-        document.getElementById("result").innerText = "Error: " + err;
-      });
+      .catch(err => console.error(err));
+    }
+
+    function downloadPDF() {
+      alert("Use the print button to generate and download the PDF.");
     }
 
     function searchStudent() {
-      const admNo = document.getElementById("searchAdmNo").value;
+      const admNo = document.getElementById("searchAdm").value;
       if (!admNo) {
-        document.getElementById("result").innerText = "Enter admission number to search.";
+        alert("Enter admission number to search!");
         return;
       }
 
-      const data = {
-        type: "search",
-        ADM_NO: admNo
-      };
-
-      fetch(scriptURL, {
-        method: "POST",
-        body: JSON.stringify(data)
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ type: "search", ADM_NO: admNo }),
       })
       .then(res => res.json())
-      .then(obj => {
-        if (obj.error) {
-          document.getElementById("result").innerText = obj.error;
+      .then(data => {
+        if (data && data.studentName) {
+          document.getElementById("studentName").value = data.studentName;
+          document.getElementById("admNo").value = data.admNo;
+          document.getElementById("form").value = data.form;
+          document.getElementById("reason").value = data.reason;
+          document.getElementById("date").value = data.date;
+          document.getElementById("parentContact").value = data.parentContact;
+          document.getElementById("principalContact").value = data.principalContact;
+          document.getElementById("modName").value = data.modName;
         } else {
-          document.getElementById("studentName").value = obj.studentName;
-          document.getElementById("admNo").value = obj.admNo;
-          document.getElementById("form").value = obj.form;
-          document.getElementById("reason").value = obj.reason;
-          document.getElementById("date").value = obj.date;
-          document.getElementById("parentContact").value = obj.parentContact;
-          document.getElementById("principalContact").value = obj.principalContact;
-          document.getElementById("modName").value = obj.modName;
-          document.getElementById("result").innerText = "Student data loaded.";
+          alert("Student not found!");
         }
       })
-      .catch(err => {
-        document.getElementById("result").innerText = "Error: " + err;
-      });
-    }
-
-    function clearForm() {
-      document.getElementById("studentName").value = "";
-      document.getElementById("admNo").value = "";
-      document.getElementById("form").value = "";
-      document.getElementById("reason").value = "";
-      document.getElementById("date").value = "";
-      document.getElementById("parentContact").value = "";
-      document.getElementById("principalContact").value = "";
-      document.getElementById("modName").value = "";
+      .catch(err => console.error(err));
     }
 
     function logout() {
-      // Placeholder logic: just clear form and show message
+      alert("Logged out!");
       clearForm();
-      document.getElementById("result").innerText = "You have been logged out.";
     }
   </script>
-
 </body>
 </html>
 
+     
+     
+ 
+      
+     
+      
+   
+
+
+    
   
      
 
