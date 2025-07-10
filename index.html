@@ -1,44 +1,183 @@
-
 <!DOCTYPE html>
-<html lang="="en">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>Friends School Kimugui Girls - Leave Out System</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Leave Out System</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #f4f4f4;
+    }
+    header, footer {
+      background-color: #0D47A1;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    footer {
+      font-size: 0.9em;
+    }
+    main {
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      color: #0D47A1;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+    button {
+      background-color: #0D47A1;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #1565C0;
+    }
+  </style>
 </head>
 <body>
   <header>
-    <h2>FRIENDS SCHOOL KIMUGUI GIRLS</h2>
-    <h4>MOTTO: STRIVE TO EXCEL</h4>
+    FRIENDS SCHOOL KIMUGUI GIRLS
   </header>
 
   <main>
-    <h3>Leave Out Request Form</h3>
-    <form id="leaveForm">
-      <input type="text" name="STUDENT_NAME" placeholder="Student Name" required><br>
-      <input type="text" name="ADM_NO" placeholder="Admission Number" required><br>
-      <input type="text" name="FORM" placeholder="Form/Class" required><br>
-      <input type="text" name="REASON" placeholder="Reason for Leave" required><br>
-      <input type="date" name="DATE" required><br>
-      <input type="text" name="PARENT_CONTACT" placeholder="Parent Contact" required><br>
-      <input type="text" name="PRINCIPAL_CONTACT" placeholder="Principal Contact" required><br>
-      <input type="text" name="MOD_NAME" placeholder="Moderator Name" required><br><br>
+    <h2>Leave Out System</h2>
+    <input type="text" id="studentName" placeholder="Student Name">
+    <input type="text" id="admNo" placeholder="Admission Number">
+    <input type="text" id="form" placeholder="Form">
+    <input type="text" id="reason" placeholder="Reason">
+    <input type="date" id="date" placeholder="Date">
+    <input type="text" id="parentContact" placeholder="Parent Contact">
+    <input type="text" id="principalContact" placeholder="Principal Contact">
+    <input type="text" id="modName" placeholder="MOD Name">
 
-      <button type="button" onclick="sendSMS()">📤 Send SMS</button>
-      <button type="button" onclick="printSheet()">🖨️ Print</button>
-      <button type="button" onclick="saveData()">💾 Save to Sheet</button>
-      <button type="button" onclick="searchStudent()">🔍 Search by ADM NO</button>
-    </form>
+    <button onclick="searchStudent()">Search</button>
+    <button onclick="sendSMS()">Send SMS</button>
+    <button onclick="printSheet()">Print</button>
+    <button onclick="downloadPDF()">Download</button>
+    <button onclick="saveData()">Save (Clear After)</button>
   </main>
 
   <footer>
-    <p>SYSTEM BY: PAUL MAKOKHA</p>
-    <p>0708458844 / 0756157756</p>
-    <p>TO GOD BE THE GLORY</p>
+    MOTTO: STRIVE TO EXCEL | System by Paul Makokha, To God be the Glory | 0708458844 / 0756157756
   </footer>
 
-  <script src="app.js"></script>
+  <script>
+    const scriptURL = "YOUR_DEPLOYED_SCRIPT_URL"; // <-- Replace with your deployed Google Apps Script web app URL
+
+    function collectFormData() {
+      return {
+        studentName: document.getElementById('studentName').value,
+        admNo: document.getElementById('admNo').value,
+        form: document.getElementById('form').value,
+        reason: document.getElementById('reason').value,
+        date: document.getElementById('date').value,
+        parentContact: document.getElementById('parentContact').value,
+        principalContact: document.getElementById('principalContact').value,
+        modName: document.getElementById('modName').value,
+      };
+    }
+
+    function searchStudent() {
+      const admNo = document.getElementById('admNo').value;
+      fetch(scriptURL, {
+        method: "POST",
+        body: JSON.stringify({ type: "search", ADM_NO: admNo }),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('studentName').value = data.studentName || "";
+        document.getElementById('form').value = data.form || "";
+        document.getElementById('reason').value = data.reason || "";
+        document.getElementById('date').value = data.date || "";
+        document.getElementById('parentContact').value = data.parentContact || "";
+        document.getElementById('principalContact').value = data.principalContact || "";
+        document.getElementById('modName').value = data.modName || "";
+        alert("Student data loaded!");
+      })
+      .catch(err => alert("Error: " + err));
+    }
+
+    function sendSMS() {
+      const data = collectFormData();
+      data.type = "sms";
+      fetch(scriptURL, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(res => res.text())
+      .then(response => alert(response))
+      .catch(err => alert("Error: " + err));
+    }
+
+    function printSheet() {
+      const data = collectFormData();
+      data.type = "print";
+      fetch(scriptURL, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(res => res.text())
+      .then(response => alert(response))
+      .catch(err => alert("Error: " + err));
+    }
+
+    function downloadPDF() {
+      const data = collectFormData();
+      data.type = "print"; // same as print for generating PDF link
+      fetch(scriptURL, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(res => res.text())
+      .then(response => alert("PDF link generated! Check your Google Sheet for link."))
+      .catch(err => alert("Error: " + err));
+    }
+
+    function saveData() {
+      const data = collectFormData();
+      data.type = "save";
+      fetch(scriptURL, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(res => res.text())
+      .then(response => {
+        alert(response);
+        clearForm();
+      })
+      .catch(err => alert("Error: " + err));
+    }
+
+    function clearForm() {
+      document.getElementById('studentName').value = "";
+      document.getElementById('admNo').value = "";
+      document.getElementById('form').value = "";
+      document.getElementById('reason').value = "";
+      document.getElementById('date').value = "";
+      document.getElementById('parentContact').value = "";
+      document.getElementById('principalContact').value = "";
+      document.getElementById('modName').value = "";
+    }
+  </script>
 </body>
 </html>
