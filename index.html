@@ -1,183 +1,228 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
   <title>Friends School Kimugui Girls - Leave Out System</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
       margin: 0;
-      font-family: 'Roboto', sans-serif;
-      background-color: #f4f4f4;
+      padding: 0;
     }
     header, footer {
-      background-color: #0D47A1;
+      background-color: blue;
       color: white;
-      padding: 20px;
       text-align: center;
-    }
-    footer {
-      font-size: 0.9em;
+      padding: 10px;
     }
     main {
+      background-color: white;
       padding: 20px;
-      max-width: 700px;
-      margin: auto;
+      margin: 20px auto;
+      max-width: 600px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    h2 {
-      text-align: center;
-      color: #0D47A1;
-    }
-    input, button {
+    input[type="text"], input[type="date"] {
       width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 5px;
+      padding: 8px;
+      margin: 5px 0 15px 0;
       border: 1px solid #ccc;
-      font-size: 1em;
+      border-radius: 4px;
+      box-sizing: border-box;
     }
     button {
-      background-color: #0D47A1;
-      color: white;
+      margin: 5px 4px 5px 0;
+      padding: 8px 10px;
       border: none;
+      color: white;
+      border-radius: 4px;
       cursor: pointer;
-      transition: 0.3s;
+      min-width: 80px;
     }
-    button:hover {
-      background-color: #1565C0;
+    button.save-btn { background-color: green; }
+    button.sms-btn { background-color: orange; }
+    button.print-btn { background-color: purple; }
+    button.search-btn { background-color: teal; }
+    button.logout-btn { background-color: red; }
+    button:hover { opacity: 0.9; }
+    @media (max-width: 640px) {
+      main {
+        margin: 10px;
+        padding: 15px;
+      }
+      button {
+        margin: 4px 2px;
+      }
     }
   </style>
 </head>
 <body>
+
   <header>
-    FRIENDS SCHOOL KIMUGUI GIRLS
+    <h2>FRIENDS SCHOOL KIMUGUI GIRLS</h2>
+    <p>MOTTO: STRIVE TO EXCEL</p>
   </header>
 
   <main>
-    <h2>Leave Out System</h2>
+    <h3>Leave Out Form</h3>
+
     <input type="text" id="studentName" placeholder="Student Name">
     <input type="text" id="admNo" placeholder="Admission Number">
     <input type="text" id="form" placeholder="Form">
-    <input type="text" id="reason" placeholder="Reason">
+    <input type="text" id="reason" placeholder="Reason for Leave">
     <input type="date" id="date" placeholder="Date">
     <input type="text" id="parentContact" placeholder="Parent Contact">
     <input type="text" id="principalContact" placeholder="Principal Contact">
     <input type="text" id="modName" placeholder="MOD Name">
 
-    <button onclick="searchStudent()">Search</button>
-    <button onclick="sendSMS()">Send SMS</button>
-    <button onclick="printSheet()">Print</button>
-    <button onclick="downloadPDF()">Download</button>
-    <button onclick="saveData()">Save (Clear After)</button>
+    <h4>Search Student by Admission Number</h4>
+    <input type="text" id="searchAdmNo" placeholder="Enter Admission Number to Search">
+    <button class="search-btn" onclick="searchStudent()">Search</button>
+
+    <div style="margin-top: 10px;">
+      <button class="save-btn" onclick="saveData()">Save</button>
+      <button class="sms-btn" onclick="sendSMS()">Send SMS</button>
+      <button class="print-btn" onclick="printSheet()">Print</button>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <p id="result"></p>
   </main>
 
   <footer>
-    MOTTO: STRIVE TO EXCEL | System by Paul Makokha, To God be the Glory | 0708458844 / 0756157756
+    <p>SYSTEM BY PAUL MAKOKHA, TO GOD BE THE GLORY, 0708458844 / 0756157756</p>
   </footer>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxicTorNYhmKdBjpCm66-J80rACsURsM-JfzAg3rXd6soQwiztYQ6RFwwYhhTrUyTRuzA/exec"; // <-- Replace with your deployed Google Apps Script web app URL
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxicTorNYhmKdBjpCm66-J80rACsURsM-JfzAg3rXd6soQwiztYQ6RFwwYhhTrUyTRuzA/exec"; // Replace with your Google Apps Script URL
 
-    function collectFormData() {
+    function getFormData() {
       return {
-        studentName: document.getElementById('studentName').value,
-        admNo: document.getElementById('admNo').value,
-        form: document.getElementById('form').value,
-        reason: document.getElementById('reason').value,
-        date: document.getElementById('date').value,
-        parentContact: document.getElementById('parentContact').value,
-        principalContact: document.getElementById('principalContact').value,
-        modName: document.getElementById('modName').value,
+        studentName: document.getElementById("studentName").value,
+        admNo: document.getElementById("admNo").value,
+        form: document.getElementById("form").value,
+        reason: document.getElementById("reason").value,
+        date: document.getElementById("date").value,
+        parentContact: document.getElementById("parentContact").value,
+        principalContact: document.getElementById("principalContact").value,
+        modName: document.getElementById("modName").value
       };
     }
 
-    function searchStudent() {
-      const admNo = document.getElementById('admNo').value;
+    function saveData() {
+      const data = getFormData();
+      data.type = "save";
+
       fetch(scriptURL, {
         method: "POST",
-        body: JSON.stringify({ type: "search", ADM_NO: admNo }),
-        headers: { "Content-Type": "application/json" }
+        body: JSON.stringify(data)
       })
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById('studentName').value = data.studentName || "";
-        document.getElementById('form').value = data.form || "";
-        document.getElementById('reason').value = data.reason || "";
-        document.getElementById('date').value = data.date || "";
-        document.getElementById('parentContact').value = data.parentContact || "";
-        document.getElementById('principalContact').value = data.principalContact || "";
-        document.getElementById('modName').value = data.modName || "";
-        alert("Student data loaded!");
+      .then(res => res.text())
+      .then(txt => {
+        document.getElementById("result").innerText = txt;
+        clearForm();
       })
-      .catch(err => alert("Error: " + err));
+      .catch(err => {
+        document.getElementById("result").innerText = "Error: " + err;
+      });
     }
 
     function sendSMS() {
-      const data = collectFormData();
+      const data = getFormData();
       data.type = "sms";
+
       fetch(scriptURL, {
         method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" }
+        body: JSON.stringify(data)
       })
       .then(res => res.text())
-      .then(response => alert(response))
-      .catch(err => alert("Error: " + err));
+      .then(txt => {
+        document.getElementById("result").innerText = txt;
+      })
+      .catch(err => {
+        document.getElementById("result").innerText = "Error: " + err;
+      });
     }
 
     function printSheet() {
-      const data = collectFormData();
+      const data = getFormData();
       data.type = "print";
+
       fetch(scriptURL, {
         method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" }
+        body: JSON.stringify(data)
       })
       .then(res => res.text())
-      .then(response => alert(response))
-      .catch(err => alert("Error: " + err));
+      .then(txt => {
+        document.getElementById("result").innerText = txt;
+      })
+      .catch(err => {
+        document.getElementById("result").innerText = "Error: " + err;
+      });
     }
 
-    function downloadPDF() {
-      const data = collectFormData();
-      data.type = "print"; // same as print for generating PDF link
-      fetch(scriptURL, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" }
-      })
-      .then(res => res.text())
-      .then(response => alert("PDF link generated! Check your Google Sheet for link."))
-      .catch(err => alert("Error: " + err));
-    }
+    function searchStudent() {
+      const admNo = document.getElementById("searchAdmNo").value;
+      if (!admNo) {
+        document.getElementById("result").innerText = "Enter admission number to search.";
+        return;
+      }
 
-    function saveData() {
-      const data = collectFormData();
-      data.type = "save";
+      const data = {
+        type: "search",
+        ADM_NO: admNo
+      };
+
       fetch(scriptURL, {
         method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" }
+        body: JSON.stringify(data)
       })
-      .then(res => res.text())
-      .then(response => {
-        alert(response);
-        clearForm();
+      .then(res => res.json())
+      .then(obj => {
+        if (obj.error) {
+          document.getElementById("result").innerText = obj.error;
+        } else {
+          document.getElementById("studentName").value = obj.studentName;
+          document.getElementById("admNo").value = obj.admNo;
+          document.getElementById("form").value = obj.form;
+          document.getElementById("reason").value = obj.reason;
+          document.getElementById("date").value = obj.date;
+          document.getElementById("parentContact").value = obj.parentContact;
+          document.getElementById("principalContact").value = obj.principalContact;
+          document.getElementById("modName").value = obj.modName;
+          document.getElementById("result").innerText = "Student data loaded.";
+        }
       })
-      .catch(err => alert("Error: " + err));
+      .catch(err => {
+        document.getElementById("result").innerText = "Error: " + err;
+      });
     }
 
     function clearForm() {
-      document.getElementById('studentName').value = "";
-      document.getElementById('admNo').value = "";
-      document.getElementById('form').value = "";
-      document.getElementById('reason').value = "";
-      document.getElementById('date').value = "";
-      document.getElementById('parentContact').value = "";
-      document.getElementById('principalContact').value = "";
-      document.getElementById('modName').value = "";
+      document.getElementById("studentName").value = "";
+      document.getElementById("admNo").value = "";
+      document.getElementById("form").value = "";
+      document.getElementById("reason").value = "";
+      document.getElementById("date").value = "";
+      document.getElementById("parentContact").value = "";
+      document.getElementById("principalContact").value = "";
+      document.getElementById("modName").value = "";
+    }
+
+    function logout() {
+      // Placeholder logic: just clear form and show message
+      clearForm();
+      document.getElementById("result").innerText = "You have been logged out.";
     }
   </script>
+
 </body>
 </html>
+
+  
+     
+
+
+
+      
+     
